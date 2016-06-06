@@ -1,0 +1,103 @@
+#Reproducible Research Course Project NO.1 
+
+Loading and preprocessing the data 
+```{r}
+setwd("/Users/test/Desktop/R")
+activity<-read.csv("activity.csv",header=TRUE,sep=",",na.strings="NA",colClasses=c(date="Date"))
+str(activity)
+head(activity)
+```
+
+It is confirmed that there are 3 variables and 17,568 observations, which was expected. Now that the data hs been loaded, we can do the analysis
+
+## What is the mean total number of steps taken per day? 
+First, the total number of steps taken perday is calculated using the dplyr library
+```{r}
+library(dplyr)
+total_step_day<-activity %>% 
+                group_by(date) %>%
+                summarize(total.steps=sum(steps, na.rm=FALSE))
+head(total_step_day)
+```
+
+Below is the distribution of the total number of stpes taken per day (missing values ignored)
+```{r}
+hist(total_step_day$total.steps,
+     main="Distribution of steps by Day",
+     xlab="Total Nubmer of Steps per Day",
+     ylab="Frequency",
+     breaks=20, col="red")
+```
+The mean total number of steps taken per day can be calcualted as: 
+```{r}
+mean(total_step_day$total.steps,na.rm=TRUE)
+```
+and the median 
+```{r}
+median(total_step_day$total.steps,na.rm=TRUE)
+```
+
+## What is the average daily activity pattern? 
+To answer this question, the average number of steps per 5-min internval is compter 
+```{r}
+AVG_step<-activity %>%
+        group_by(interval) %>%
+        summarize(avg.steps=mean(steps,na.rm=TRUE))
+head(AVG_step)
+```
+The figure below shows the average daily activity patteron.
+```{r}
+plot(strptime(sprintf("%04d", AVG_step$interval), format="%H%M"),
+     AVG_step$avg.steps, type = "l", 
+     main = "Average Daily Activity", 
+     xlab = "Time of Day (HH:MM)", 
+     ylab = "Average Number of Steps")
+```
+## Imputing missing values
+### Summarize all the missing values
+```{r} 
+sum(is.na(activity$steps))
+```
+### Fill missing values with NA
+```{r}
+data_full <- activity
+nas <- is.na(data_full$steps)
+avg_interval <- tapply(data_full$steps, data_full$interval, mean, na.rm=TRUE, simplify=TRUE)
+data_full$steps[nas] <- avg_interval[as.character(data_full$interval[nas])]
+```
+### Check to see if the missing values are patched
+```{r}
+sum(is.na(data_full$steps))
+```
+### Calculate the number of steps 
+```{r}
+steps_full <- data_full %>%
+  filter(!is.na(steps)) %>%
+  group_by(date) %>%
+  summarize(steps = sum(steps)) %>%
+  print
+
+library(ggplot2)
+ggplot(steps_full, aes(x = steps)) +
+  geom_histogram(fill = "red", binwidth = 1000) +
+  labs(title = "Histogram of Steps per day, including missing values", x = "Steps per day", y = "Frequency")
+```
+
+## Are there differences in activity patterns between weekdays and weekends?
+
+### create a new column with mutate from dplyr,and apply whether the day is weekend or weekday
+```{r}
+data_full <- mutate(data_full, weektype = ifelse(weekdays(data_full$date) == "Saturday" | weekdays(data_full$date) == "Sunday", "weekend", "weekday"))
+data_full$weektype <- as.factor(data_full$weektype)
+head(data_full)
+```
+Calculate the average steps in the 5-minute interval and use ggplot for making the time series of the 5-minute interval for weekday and weekend, and compare the average steps
+```{r}
+interval_full <- data_full %>%
+  group_by(interval, weektype) %>%
+  summarise(steps = mean(steps))
+s <- ggplot(interval_full, aes(x=interval, y=steps, color = weektype)) +
+  geom_line() +
+  facet_wrap(~weektype, ncol = 1, nrow=2)
+print(s)
+```
