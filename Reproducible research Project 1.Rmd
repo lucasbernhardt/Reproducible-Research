@@ -2,13 +2,13 @@
 
 Loading and preprocessing the data 
 ```{r}
-setwd("/Users/LucasXin/Documents/R/Data Science Coursera/Reproducible-Research")
+setwd("/Users/LucasXin/Documents/R/Raw Data Archive")
 activity<-read.csv("activity.csv",header=TRUE,sep=",",na.strings="NA",colClasses=c(date="Date"))
 str(activity)
 head(activity)
 ```
 
-It is confirmed that there are 3 variables and 17,568 observations, which was expected. Now that the data hs been loaded, we can do the analysis
+It is confirmed that there are 3 variables and 17,568 observations, which was expected. Now that the data has been loaded, we can do the analysis
 
 ## What is the mean total number of steps taken per day? 
 First, the total number of steps taken perday is calculated using the dplyr library
