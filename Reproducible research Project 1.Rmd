@@ -2,7 +2,7 @@
 
 Loading and preprocessing the data 
 ```{r}
-setwd("/Users/test/Desktop/R")
+setwd("/Users/LucasXin/Documents/R/Data Science Coursera/Reproducible-Research")
 activity<-read.csv("activity.csv",header=TRUE,sep=",",na.strings="NA",colClasses=c(date="Date"))
 str(activity)
 head(activity)
