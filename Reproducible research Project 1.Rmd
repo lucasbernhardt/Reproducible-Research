@@ -24,7 +24,7 @@ Below is the distribution of the total number of stpes taken per day (missing va
 ```{r}
 hist(total_step_day$total.steps,
      main="Distribution of steps by Day",
-     xlab="Total Nubmer of Steps per Day",
+     xlab="Total Number of Steps per Day",
      ylab="Frequency",
      breaks=20, col="Firebrick")
 ```
