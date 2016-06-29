@@ -1,6 +1,13 @@
-#Reproducible Research Course Project NO.1 
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
 
-Loading and preprocessing the data 
+
+## Loading and preprocessing the data
+
 ```{r}
 setwd("/Users/LucasXin/Documents/R/Raw Data Archive")
 activity<-read.csv("activity.csv",header=TRUE,sep=",",na.strings="NA",colClasses=c(date="Date"))
@@ -10,7 +17,8 @@ head(activity)
 
 It is confirmed that there are 3 variables and 17,568 observations, which was expected. Now that the data has been loaded, we can do the analysis
 
-## What is the mean total number of steps taken per day? 
+## What is mean total number of steps taken per day?
+
 First, the total number of steps taken perday is calculated using the dplyr library
 ```{r}
 library(dplyr)
@@ -28,16 +36,19 @@ hist(total_step_day$total.steps,
      ylab="Frequency",
      breaks=20, col="Firebrick")
 ```
+
 The mean total number of steps taken per day can be calcualted as: 
 ```{r}
 mean(total_step_day$total.steps,na.rm=TRUE)
 ```
+
 and the median 
 ```{r}
 median(total_step_day$total.steps,na.rm=TRUE)
 ```
 
-## What is the average daily activity pattern? 
+## What is the average daily activity pattern?
+
 To answer this question, the average number of steps per 5-min internval is compter 
 ```{r}
 AVG_step<-activity %>%
@@ -53,6 +64,7 @@ plot(strptime(sprintf("%04d", AVG_step$interval), format="%H%M"),
      xlab = "Time of Day (HH:MM)", 
      ylab = "Average Number of Steps")
 ```
+
 ## Imputing missing values
 ### Summarize all the missing values
 ```{r} 
@@ -84,7 +96,6 @@ ggplot(steps_full, aes(x = steps)) +
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
-
 ### create a new column with mutate from dplyr,and apply whether the day is weekend or weekday
 ```{r}
 data_full <- mutate(data_full, weektype = ifelse(weekdays(data_full$date) == "Saturday" | weekdays(data_full$date) == "Sunday", "weekend", "weekday"))
